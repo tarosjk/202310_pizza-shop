@@ -22,6 +22,10 @@ $errors = [
   ],
 ];
 
+function error_msg($key) {
+
+}
+
 // 1. 送信のチェック
 if (
   isset($_POST['submit']) &&
