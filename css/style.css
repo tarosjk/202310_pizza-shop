@@ -1,0 +1,6 @@
+.error-msg {
+  margin-bottom: 0;
+  font-size: 14px;
+  display: list-item;
+  list-style-position: inside;
+}

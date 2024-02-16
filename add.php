@@ -9,8 +9,8 @@
 
 $errors = [
   'pizza-name' => [
-    'required' => false,
-    'format' => false,
+    'required' => true,
+    'format' => true,
   ],
   'chef-name' => [
     'required' => false,
@@ -22,8 +22,24 @@ $errors = [
   ],
 ];
 
-function error_msg($key) {
+$error_msgs = [
+  'required' => '必須入力です',
+  'format' => 'フォーマットが違います'
+];
 
+function error_msg($key)
+{
+  global $errors;
+  global $error_msgs;
+
+  $error_html = '';
+  foreach ($errors[$key] as $key => $flag) {
+    if ($flag) {
+      $error_html .= "<p class=\"text-danger error-msg\">{$error_msgs[$key]}</p>";
+    }
+  }
+
+  return $error_html;
 }
 
 // 1. 送信のチェック
@@ -65,7 +81,7 @@ include 'template/header.php';
           <label for="pizza-name" class="form-label fw-bold">ピザの名前</label>
           <input type="text" name="pizza-name" id="pizza-name" placeholder="マルゲリータ" class="form-control">
           <p class="form-text">100文字以内で入力</p>
-          <p class="text-danger"><?= $error; ?></p>
+          <?= error_msg('pizza-name'); ?>
         </div>
         <div class="mb-3">
           <label for="chef-name" class="form-label fw-bold">シェフの名前</label>
