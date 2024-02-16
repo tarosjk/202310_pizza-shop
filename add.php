@@ -1,4 +1,6 @@
 <?php
+// セッションの開始
+session_start();
 
 // データ受信後の処理
 // 1. 送信のチェック
@@ -42,6 +44,8 @@ function error_msg($key)
   return $error_html;
 }
 
+$pizza_name = $chef_name = $topping = '';
+
 // 1. 送信のチェック
 if (
   isset($_POST['submit']) &&
@@ -75,10 +79,26 @@ if (
     $errors['topping']['required'] = true;
   }
 
-  // エラーの内容確認
-  echo '<pre>';
-  var_dump($errors);
-  echo '</pre>';
+  // 入力値の再反映
+  $pizza_name = $_POST['pizza-name'];
+  $chef_name = $_POST['chef-name'];
+  $topping = $_POST['topping'];
+
+  // 最終エラーチェック
+  $error_exists = false;
+  foreach ($errors as $error) {
+    if (in_array(true, $error)) {
+      $error_exists = true;
+      break;
+    }
+  }
+
+
+  if (!$error_exists) {
+    $_SESSION['success-msg'] = 'ピザの登録が完了しました';
+    header('location:index.php');
+    exit; //die
+  }
 } // 送信チェック if
 
 
@@ -95,19 +115,19 @@ include 'template/header.php';
       <form action="add.php" method="post">
         <div class="mb-3">
           <label for="pizza-name" class="form-label fw-bold">ピザの名前</label>
-          <input type="text" name="pizza-name" id="pizza-name" placeholder="マルゲリータ" class="form-control">
+          <input type="text" name="pizza-name" id="pizza-name" placeholder="マルゲリータ" class="form-control" value="<?= $pizza_name; ?>">
           <p class="form-text">100文字以内で入力</p>
           <?= error_msg('pizza-name'); ?>
         </div>
         <div class="mb-3">
           <label for="chef-name" class="form-label fw-bold">シェフの名前</label>
-          <input type="text" name="chef-name" id="chef-name" placeholder="ピザシェフ" class="form-control">
+          <input type="text" name="chef-name" id="chef-name" placeholder="ピザシェフ" class="form-control" value="<?= $chef_name; ?>">
           <p class="form-text">ピザの作者の名前を入力して下さい。ニックネームもOK。</p>
           <?= error_msg('chef-name'); ?>
         </div>
         <div class="mb-3">
           <label for="topping" class="form-label fw-bold">トッピング</label>
-          <input type="text" name="topping" id="topping" placeholder="チーズ,バジル" class="form-control">
+          <input type="text" name="topping" id="topping" placeholder="チーズ,バジル" class="form-control" value="<?= $topping; ?>">
           <?= error_msg('topping'); ?>
         </div>
         <div class="text-center">
