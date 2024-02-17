@@ -2,6 +2,9 @@
 // セッションの開始
 session_start();
 
+// データベース接続
+require 'config/dbconnect.php';
+
 // データ受信後の処理
 // 1. 送信のチェック
 // 2. エラーチェック
@@ -95,9 +98,26 @@ if (
 
 
   if (!$error_exists) {
-    $_SESSION['success-msg'] = 'ピザの登録が完了しました';
-    header('location:index.php');
-    exit; //die
+
+    // データベースへのデータの登録
+    $stmt = $db->prepare('
+      INSERT INTO pizzas
+      (pizzaname, chefname, topping)
+      VALUES
+      (?,?,?)
+    ');
+    $stmt->bindValue(1, $_POST['pizza-name']);
+    $stmt->bindValue(2, $_POST['chef-name']);
+    $stmt->bindValue(3, $_POST['topping']);
+    $result = $stmt->execute();
+
+    if ($result) {
+      $_SESSION['success-msg'] = 'ピザの登録が完了しました';
+      header('location:index.php');
+      exit; //die
+    } else {
+      echo 'データベース登録時にエラーが発生しました';
+    }
   }
 } // 送信チェック if
 
@@ -134,7 +154,6 @@ include 'template/header.php';
           <button class="btn btn-primary" value="submit" name="submit">追加する</button>
         </div>
       </form>
-      <?php var_dump($_POST) ?>
     </div>
   </div>
 </div>
