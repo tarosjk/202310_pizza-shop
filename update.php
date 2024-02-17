@@ -143,11 +143,13 @@ if ($result) {
     header('location:index.php');
     exit;
   }
-
-  $pizza_name = $pizza['pizzaname'];
-  $chef_name = $pizza['chefname'];
-  $topping = $pizza['topping'];
+  if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $pizza_name = $pizza['pizzaname'];
+    $chef_name = $pizza['chefname'];
+    $topping = $pizza['topping'];
+  }
 }
+
 
 
 ?>
