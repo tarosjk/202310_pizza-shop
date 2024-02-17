@@ -9,6 +9,7 @@ if (
   isset($_POST['delete']) &&
   $_POST['delete'] === 'delete'
 ) {
+
   $stmt = $db->prepare('DELETE FROM pizzas WHERE id = ?');
   $stmt->bindValue(1, $_POST['delete-id']);
 
@@ -32,6 +33,11 @@ $result = $stmt->execute();
 
 if ($result) {
   $pizza = $stmt->fetch();
+
+  if (!$pizza) {
+    header('location:index.php');
+    exit;
+  }
 }
 
 include 'template/header.php';
@@ -55,9 +61,11 @@ include 'template/header.php';
           <p class="text-secondary">登録日: <?= htmlspecialchars($created_at); ?></p>
         </div>
         <div class="card-footer text-end">
-          <form action="detail.php" method="post">
+          <a href="update.php" class="btn btn-primary">編集する</a>
+          <form action="detail.php" method="post" id="delete-form" class="d-inline">
             <input type="hidden" name="delete-id" value="<?= htmlspecialchars($pizza['id']); ?>">
-            <button name="delete" value="delete" class="btn btn-danger">この商品を削除する</button>
+            <input type="hidden" name="delete" value="delete">
+            <button class="btn btn-danger">この商品を削除する</button>
           </form>
         </div>
       </div>
