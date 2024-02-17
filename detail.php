@@ -61,7 +61,7 @@ include 'template/header.php';
           <p class="text-secondary">登録日: <?= htmlspecialchars($created_at); ?></p>
         </div>
         <div class="card-footer text-end">
-          <a href="update.php" class="btn btn-primary">編集する</a>
+          <a href="update.php?id=<?= htmlspecialchars($pizza['id']); ?>" class="btn btn-primary">編集する</a>
           <form action="detail.php" method="post" id="delete-form" class="d-inline">
             <input type="hidden" name="delete-id" value="<?= htmlspecialchars($pizza['id']); ?>">
             <input type="hidden" name="delete" value="delete">

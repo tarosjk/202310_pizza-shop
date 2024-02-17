@@ -47,6 +47,7 @@ function error_msg($key)
   return $error_html;
 }
 
+// 再反映用変数
 $pizza_name = $chef_name = $topping = '';
 
 // 1. 送信のチェック
@@ -101,14 +102,16 @@ if (
 
     // データベースへのデータの登録
     $stmt = $db->prepare('
-      INSERT INTO pizzas
-      (pizzaname, chefname, topping)
-      VALUES
-      (?,?,?)
+      UPDATE pizzas
+      SET
+        pizzaname=?, chefname=?, topping=?
+      WHERE
+        id = ?
     ');
     $stmt->bindValue(1, $_POST['pizza-name']);
     $stmt->bindValue(2, $_POST['chef-name']);
     $stmt->bindValue(3, $_POST['topping']);
+    $stmt->bindValue(4, $_POST['id']);
     $result = $stmt->execute();
 
     if ($result) {
@@ -122,17 +125,42 @@ if (
 } // 送信チェック if
 
 
+// URLパラメーターがない場合（TOPページにリダイレクト）
+if (!isset($_GET['id'])) {
+  header('location:index.php');
+  exit;
+}
+
+// 商品の情報を取得
+$stmt = $db->prepare('SELECT * FROM pizzas WHERE id = ?');
+$stmt->bindValue(1, $_GET['id']);
+$result = $stmt->execute();
+
+if ($result) {
+  $pizza = $stmt->fetch();
+
+  if (!$pizza) {
+    header('location:index.php');
+    exit;
+  }
+
+  $pizza_name = $pizza['pizzaname'];
+  $chef_name = $pizza['chefname'];
+  $topping = $pizza['topping'];
+}
+
+
 ?>
 <?php
 include 'template/header.php';
 ?>
 
 <div class="container">
-  <h1 class="text-center my-5">ピザの追加</h1>
+  <h1 class="text-center my-5">ピザの編集</h1>
 
   <div class="row justify-content-center">
     <div class="col-md-8 bg-white p-4 rounded">
-      <form action="add.php" method="post">
+      <form action="update.php?id=<?= htmlspecialchars($pizza['id']); ?>" method="post">
         <div class="mb-3">
           <label for="pizza-name" class="form-label fw-bold">ピザの名前</label>
           <input type="text" name="pizza-name" id="pizza-name" placeholder="マルゲリータ" class="form-control" value="<?= $pizza_name; ?>">
@@ -151,7 +179,8 @@ include 'template/header.php';
           <?= error_msg('topping'); ?>
         </div>
         <div class="text-center">
-          <button class="btn btn-primary" value="submit" name="submit">追加する</button>
+          <input type="hidden" name="id" value="<?= htmlspecialchars($pizza['id']); ?>">
+          <button class="btn btn-primary" value="submit" name="submit">更新する</button>
         </div>
       </form>
     </div>
