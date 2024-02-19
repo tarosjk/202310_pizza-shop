@@ -115,7 +115,7 @@ if (
     $result = $stmt->execute();
 
     if ($result) {
-      $_SESSION['success-msg'] = 'ピザの登録が完了しました';
+      $_SESSION['success-msg'] = 'ピザの更新が完了しました';
       header('location:index.php');
       exit; //die
     } else {
